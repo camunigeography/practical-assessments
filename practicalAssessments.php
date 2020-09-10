@@ -959,7 +959,7 @@ class practicalAssessments extends frontControllerApplication
 		}
 		
 		# Get all the available users
-		$getUsersOnCourse = $this->getUsersOnCourse ();
+		$usersOnCourse = $this->getUsersOnCourse ();
 		
 		# Get the questions for each topic and a set of formatted headings
 		$questions = array ();
@@ -979,7 +979,7 @@ class practicalAssessments extends frontControllerApplication
 		
 		# Loop through each available user, to build up their results
 		$table = array ();
-		foreach ($getUsersOnCourse as $username => $user) {
+		foreach ($usersOnCourse as $username => $user) {
 			$scoreTotal = 0;
 			$questionsTotal = 0;
 			
