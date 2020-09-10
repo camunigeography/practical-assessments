@@ -23,9 +23,9 @@
 	RewriteEngine on
 	RewriteRule ^$baseUrl/(theory|practical|assessment)/$ $baseUrl/index.html?action=$1&item=select [L]
 	RedirectMatch permanent ^$baseUrl/(theory|practical|assessment)$ $baseUrl/$1/
-	RewriteRule ^$baseUrl/topic([1-9][0-9]?)/(theory|practical|assessment)/$ $baseUrl/index.html?action=$2&item=$1 [L]
-	RedirectMatch permanent ^$baseUrl/topic([1-9][0-9]?)/(theory|practical|assessment)$ $baseUrl/topic$1/$2/
-	RedirectMatch permanent ^$baseUrl/topic([1-9][0-9]?)/?$ $baseUrl/
+	RewriteRule ^$baseUrl/session([1-9][0-9]?)/(theory|practical|assessment)/$ $baseUrl/index.html?action=$2&item=$1 [L]
+	RedirectMatch permanent ^$baseUrl/session([1-9][0-9]?)/(theory|practical|assessment)$ $baseUrl/session$1/$2/
+	RedirectMatch permanent ^$baseUrl/session([1-9][0-9]?)/?$ $baseUrl/
 	RewriteRule ^$baseUrl/(status|results|upload).html$ $baseUrl/index.html?action=$1 [L]
 	RewriteRule ^$baseUrl/results(raw|compiled).csv$ $baseUrl/index.html?action=results$1 [L]
 	

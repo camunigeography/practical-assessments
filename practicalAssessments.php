@@ -411,7 +411,7 @@ class practicalAssessments extends frontControllerApplication
 		$totalPages = count ($images);
 		
 		# Add in page state management (and end if a refresh has been called)
-		if (!$pageStateControls = $this->pageStateManagement ($type, $session, $totalPages, "/topic{$session}/{$type}/", $this->topics[$session]['forwardOnly'])) {return;}
+		if (!$pageStateControls = $this->pageStateManagement ($type, $session, $totalPages, "/session{$session}/{$type}/", $this->topics[$session]['forwardOnly'])) {return;}
 		
 		# Determine the current page (i.e. image), padded as a value from 00 to 99
 		$loadPageImage = str_pad ($this->userState["{$type}CurrentPages"][$session], 2, '0', STR_PAD_LEFT);
@@ -473,7 +473,7 @@ class practicalAssessments extends frontControllerApplication
 		$totalPages = count ($questions);
 		
 		# Add in page state management (and end if a refresh has been called)
-		if (!$pageStateControls = $this->pageStateManagement ('assessment', $session, $totalPages, "/topic{$session}/assessment/", true)) {return;}
+		if (!$pageStateControls = $this->pageStateManagement ('assessment', $session, $totalPages, "/session{$session}/assessment/", true)) {return;}
 		
 		# Create the page title
 		$title = "\n\n<h2>Session {$session}: " . htmlspecialchars ($this->topics[$session]['name']) . '</h2>';
@@ -592,7 +592,7 @@ class practicalAssessments extends frontControllerApplication
 					$html .= "\n<h3>Next question</h3>";
 					#!# Replace with a form to avoid repeat-submission of form answering a different question
 					$html .= "\nYou can now move on to question {$nextPage}:</p>";
-					$html .= '<form name="navigation" id="previousnext" action="' . $this->baseUrl . '/topic' . $session . '/assessment/" method="post">
+					$html .= '<form name="navigation" id="previousnext" action="' . $this->baseUrl . '/session' . $session . '/assessment/" method="post">
 						<input type="submit" name="navigation" value="Next &gt;" />
 					</form>';
 				} else {
@@ -606,7 +606,7 @@ class practicalAssessments extends frontControllerApplication
 		$html .= "\n</div>";
 		
 		# Regenerate the state controls
-		$pageStateControls = $this->pageStateManagement ('assessment', $session, $totalPages, "/topic{$session}/assessment/", true, $questionNumber);
+		$pageStateControls = $this->pageStateManagement ('assessment', $session, $totalPages, "/session{$session}/assessment/", true, $questionNumber);
 		
 		# Add the title and state controls to the start of the HTML
 		$html = $title . $pageStateControls . $html;
@@ -621,7 +621,7 @@ class practicalAssessments extends frontControllerApplication
 	{
 		# Construct the target URL
 		$currentTopic = $this->userState['currentTopic'];
-		$url = $_SERVER['_SITE_URL'] . $this->baseUrl . "/topic{$currentTopic}/{$type}/";
+		$url = $_SERVER['_SITE_URL'] . $this->baseUrl . "/session{$currentTopic}/{$type}/";
 		
 		# Redirect or show message if the header-sending fails
 		echo application::sendHeader (302, $url, true);
@@ -845,7 +845,7 @@ class practicalAssessments extends frontControllerApplication
 				if ($this->settings['browseableAlwaysOpen'] && $action != 'assessment') {
 					$buttonAvailable = true;
 				}
-				$table[$id][$action] = ($buttonAvailable ? "<a href=\"{$this->baseUrl}/topic{$id}/{$action}/\" class=\"actions\"><img src=\"/images/icons/" . $this->actions[$action]['icon'] . '.png" class="icon" /> ' . ucfirst ($label) . '</a>' : ' &nbsp; <span class="faded">(' . ucfirst ($message) . ')</span>');
+				$table[$id][$action] = ($buttonAvailable ? "<a href=\"{$this->baseUrl}/session{$id}/{$action}/\" class=\"actions\"><img src=\"/images/icons/" . $this->actions[$action]['icon'] . '.png" class="icon" /> ' . ucfirst ($label) . '</a>' : ' &nbsp; <span class="faded">(' . ucfirst ($message) . ')</span>');
 			}
 		}
 		
@@ -1209,7 +1209,7 @@ class practicalAssessments extends frontControllerApplication
 			
 			# Confirm the result
 			if ($success) {
-				$html .= "\n<p>{$this->tick} The PDF was succesfully converted. <a href=\"{$this->baseUrl}/topic{$topicNumber}/{$type}/\"><strong>View the {$type} pages.</strong></a></p>";
+				$html .= "\n<p>{$this->tick} The PDF was succesfully converted. <a href=\"{$this->baseUrl}/session{$topicNumber}/{$type}/\"><strong>View the {$type} pages.</strong></a></p>";
 			} else {
 				$html .= "\n<p>An error occured during the conversion process. The server reported as follows:</p>";
 				$html .= "\n<pre>" . htmlspecialchars ($command) . '</pre>';
