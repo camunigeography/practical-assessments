@@ -25,7 +25,6 @@ class practicalAssessments extends frontControllerApplication
 			'useFeedback' => false,
 			'useEditing' => true,
 			'courseRegexp' => NULL,
-			'tableSuffix' => NULL,
 			'enableTheory' => false,
 			'assessmentLabel' => 'assessment',
 			'browseableAlwaysOpen' => false,
@@ -129,10 +128,11 @@ class practicalAssessments extends frontControllerApplication
 			  PRIMARY KEY (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of questions';
 			
-			-- Responses by students (for a specific year)
-			CREATE TABLE `responses_2019_2020` (
+			-- Responses by students
+			CREATE TABLE `responses` (
 			  `id` int NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
 			  `username` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username',
+			  `academicYear` VARCHAR(9) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Academic year',
 			  `questionId__JOIN__stats1a__assessments__reserved` int NOT NULL COMMENT 'Question ID',
 			  `isCorrect` int NOT NULL COMMENT 'Whether the student answered correctly',
 			  `answerGiven` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The answer the student gave',
@@ -333,12 +333,13 @@ class practicalAssessments extends frontControllerApplication
 		$query = "SELECT
 				*,
 				questionId__JOIN__{$this->settings['database']}__assessments__reserved AS id
-			FROM responses{$this->settings['tableSuffix']}
+			FROM responses
 			WHERE
 				    username = '{$this->user}'
+				AND academicYear = '{$this->academicYear}'
 				AND questionId__JOIN__{$this->settings['database']}__assessments__reserved IN({$questionIds})
 			;";
-		$responses = $this->databaseConnection->getData ($query, "{$this->settings['database']}.responses{$this->settings['tableSuffix']}");
+		$responses = $this->databaseConnection->getData ($query, "{$this->settings['database']}.responses");
 		foreach ($questions as $index => $question) {
 			$questionId = $question['id'];
 			$questions[$index]['responded'] = (isSet ($responses[$questionId]) ? 1 : '');
@@ -568,11 +569,12 @@ class practicalAssessments extends frontControllerApplication
 			if (!$question['responded']) {
 				$insert = array (
 					'username' => $this->user,
+					'academicYear' => $this->academicYear,
 					"questionId__JOIN__{$this->settings['database']}__assessments__reserved" => $question['id'],
 					'isCorrect' => ($answerIsCorrect ? '1' : '0'),
 					'answerGiven' => $result["answer{$questionNumber}"],
 				);
-				if (!$this->databaseConnection->insert ($this->settings['database'], "responses{$this->settings['tableSuffix']}", $insert)) {
+				if (!$this->databaseConnection->insert ($this->settings['database'], 'responses', $insert)) {
 					#!# Error handling
 					// application::dumpData ($this->databaseConnection->error ());
 				}
@@ -1046,18 +1048,18 @@ class practicalAssessments extends frontControllerApplication
 	{
 		# Define the query
 		$query = "SELECT
-			{$this->settings['database']}.responses{$this->settings['tableSuffix']}.id, {$this->settings['database']}.responses{$this->settings['tableSuffix']}.username,
+			{$this->settings['database']}.responses.id, {$this->settings['database']}.responses.username,
 			{$this->settings['globalPeopleDatabase']}.people.forename, {$this->settings['globalPeopleDatabase']}.people.surname,
 			{$this->settings['database']}.assessments.topic__JOIN__{$this->settings['database']}__topics__reserved as topic, {$this->settings['database']}.assessments.questionNumber,
-			{$this->settings['database']}.responses{$this->settings['tableSuffix']}.isCorrect
-			
-		FROM `responses{$this->settings['tableSuffix']}`
+			{$this->settings['database']}.responses.isCorrect
+		FROM responses
 		LEFT JOIN {$this->settings['database']}.assessments ON questionId__JOIN__{$this->settings['database']}__assessments__reserved = {$this->settings['database']}.assessments.id
-		LEFT JOIN {$this->settings['globalPeopleDatabase']}.people ON {$this->settings['database']}.responses{$this->settings['tableSuffix']}.username = {$this->settings['globalPeopleDatabase']}.people.username
+		LEFT JOIN {$this->settings['globalPeopleDatabase']}.people ON {$this->settings['database']}.responses.username = {$this->settings['globalPeopleDatabase']}.people.username
+		WHERE {$this->settings['database']}.responses.academicYear = :academicYear
 		ORDER BY surname, forename, `topic`, questionNumber;";
 		
 		# Get the data
-		$data = $this->databaseConnection->getData ($query);
+		$data = $this->databaseConnection->getData ($query, false, true, array ('academicYear' => $this->academicYear));
 		
 		# Return the data
 		return $data;
