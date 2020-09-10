@@ -140,9 +140,10 @@ class practicalAssessments extends frontControllerApplication
 			  PRIMARY KEY (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of responses by the student';
 			
-			-- User state (for a specific year)
-			CREATE TABLE `state_2019_2020` (
+			-- User state
+			CREATE TABLE `state` (
 			  `username` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username',
+			  `academicYear` varchar(9) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Academic year',
 			  `currentTopic` int NOT NULL DEFAULT '1' COMMENT 'Current topic',
 			  `theoryFurthestPages` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Theory: Pages - reached',
 			  `theoryCurrentPages` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Theory: Page of session - current',
@@ -151,7 +152,7 @@ class practicalAssessments extends frontControllerApplication
 			  `assessmentFurthestPages` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Assessment: Pages - reached',
 			  `assessmentCurrentPages` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Assessment: Page of session - current',
 			  `lastUpdated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
-			  PRIMARY KEY (`username`)
+			  UNIQUE KEY `entry` (`username`,`academicYear`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to store user state';
 			
 			-- Topics (i.e. sessions)
@@ -195,9 +196,9 @@ class practicalAssessments extends frontControllerApplication
 	private function getUserState ()
 	{
 		# Get the details from the state table, creating the user if they are not yet present and reading back the newly-created user's details
-		if (!$state = $this->databaseConnection->selectOne ($this->settings['database'], "state{$this->settings['tableSuffix']}", array ('username' => $this->user))) {
-			$this->databaseConnection->insert ($this->settings['database'], "state{$this->settings['tableSuffix']}", array ('username' => $this->user));
-			$state = $this->databaseConnection->selectOne ($this->settings['database'], "state{$this->settings['tableSuffix']}", array ('username' => $this->user));
+		if (!$state = $this->databaseConnection->selectOne ($this->settings['database'], 'state', array ('username' => $this->user, 'academicYear' => $this->academicYear))) {
+			$this->databaseConnection->insert ($this->settings['database'], 'state', array ('username' => $this->user, 'academicYear' => $this->academicYear));
+			$state = $this->databaseConnection->selectOne ($this->settings['database'], 'state', array ('username' => $this->user, 'academicYear' => $this->academicYear));
 		}
 		
 		# Rearrange the current pages strings into arrays
@@ -630,7 +631,7 @@ class practicalAssessments extends frontControllerApplication
 	{
 		# Update with the new session number if it has changed
 		if ($this->userState['currentTopic'] != $session) {
-			$this->databaseConnection->update ($this->settings['database'], "state{$this->settings['tableSuffix']}", array ('currentTopic' => $session), array ('username' => $this->user));
+			$this->databaseConnection->update ($this->settings['database'], 'state', array ('currentTopic' => $session), array ('username' => $this->user, 'academicYear' => $this->academicYear));
 		}
 	}
 	
@@ -719,7 +720,7 @@ class practicalAssessments extends frontControllerApplication
 		}
 		
 		# Update the state data
-		if (!$this->databaseConnection->update ($this->settings['database'], "state{$this->settings['tableSuffix']}", $update, array ('username' => $this->user))) {
+		if (!$this->databaseConnection->update ($this->settings['database'], 'state', $update, array ('username' => $this->user, 'academicYear' => $this->academicYear))) {
 			echo "\n<p>An error occured updating the page state.</p>";
 			return false;
 		}
@@ -788,19 +789,20 @@ class practicalAssessments extends frontControllerApplication
 	{
 		# Get the data from the state table
 		$query = "SELECT
-				state{$this->settings['tableSuffix']}.username as Username,
+				state.username as Username,
 				{$this->settings['globalPeopleDatabase']}.forename AS Forename,
 				{$this->settings['globalPeopleDatabase']}.surname AS Surname,
 				colleges.college AS College,
-				" . ($this->settings['enableTheory'] ? "state{$this->settings['tableSuffix']}.theoryCurrentPages," : '') . "
-				state{$this->settings['tableSuffix']}.practicalCurrentPages,
-				state{$this->settings['tableSuffix']}.assessmentCurrentPages
-			FROM {$this->settings['database']}.state{$this->settings['tableSuffix']}
-			LEFT OUTER JOIN {$this->settings['globalPeopleDatabase']}.people ON state{$this->settings['tableSuffix']}.username = {$this->settings['globalPeopleDatabase']}.people.username
+				" . ($this->settings['enableTheory'] ? 'state.theoryCurrentPages,' : '') . "
+				state.practicalCurrentPages,
+				state.assessmentCurrentPages
+			FROM {$this->settings['database']}.state
+			LEFT OUTER JOIN {$this->settings['globalPeopleDatabase']}.people ON state.username = {$this->settings['globalPeopleDatabase']}.people.username
 			LEFT OUTER JOIN {$this->settings['globalPeopleDatabase']}.colleges ON {$this->settings['globalPeopleDatabase']}.college__JOIN__people__colleges__reserved = {$this->settings['globalPeopleDatabase']}.colleges.id
+			WHERE state.academicYear = :academicYear
 			ORDER BY surname,forename
 		;";
-		$data = $this->databaseConnection->getData ($query);
+		$data = $this->databaseConnection->getData ($query, false, true, array ('academicYear' => $this->academicYear));
 		
 		# Unpack the current page strings
 		#!# This needs to be reworked as it lists them with headings "Practical: Session 1 | Assessment: Session 1 | Practical: Session 2 | Assessment: Session 2 | etc." rather than combining them at cell-level
