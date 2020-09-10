@@ -282,6 +282,7 @@ class practicalAssessments extends frontControllerApplication
 			assessments
 			LEFT JOIN topics ON topic__JOIN__{$this->settings['database']}__topics__reserved = topics.id
 		" : 'topics') . '
+			ORDER BY topics.id
 			;';
 		$data = $this->databaseConnection->getData ($query, "{$this->settings['database']}.assessments");
 		
