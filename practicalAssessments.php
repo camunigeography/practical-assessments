@@ -113,7 +113,7 @@ class practicalAssessments extends frontControllerApplication
 			CREATE TABLE `settings` (
 			  `id` int NOT NULL AUTO_INCREMENT COMMENT 'Automatic key (ignored)',
 			  `courseName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Course name',
-			  `courseRegexp` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Cohort ID pattern (regular expression)',
+			  `courseRegexp` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Cohort ID pattern (regular expression);<br />can use %year for academic year start',
 			  `academicYearStartMonth` int DEFAULT '10' COMMENT 'Academic year start month (e.g. 10 = October)',
 			  `enableTheory` tinyint DEFAULT NULL COMMENT 'Enable theory module?',
 			  `assessmentLabel` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'assessment' COMMENT 'Assessment label',
@@ -192,6 +192,12 @@ class practicalAssessments extends frontControllerApplication
 		# Determine the academic year
 		require_once ('timedate.php');
 		$this->academicYear = timedate::academicYear ($this->settings['academicYearStartMonth'], $asRangeString = true);
+		
+		# Parse the course regexp for %year
+		if ($this->action != 'settings') {
+			$academicYearStart = timedate::academicYear ($this->settings['academicYearStartMonth']);
+			$this->settings['courseRegexp'] = str_replace ('%year', $academicYearStart, $this->settings['courseRegexp']);
+		}
 		
 		# Get the available topics
 		$this->topics = $this->getTopics ();
