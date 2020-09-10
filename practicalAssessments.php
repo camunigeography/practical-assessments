@@ -113,7 +113,7 @@ class practicalAssessments extends frontControllerApplication
 			  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
 			  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
 			  PRIMARY KEY (`crsid`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Administrators';
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Administrators';
 			
 			-- Questions
 			CREATE TABLE `assessments` (
@@ -127,7 +127,7 @@ class practicalAssessments extends frontControllerApplication
 			  `why` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Why text',
 			  `help` text COLLATE utf8mb4_unicode_ci COMMENT 'Help text',
 			  PRIMARY KEY (`id`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Table of questions';
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of questions';
 			
 			-- Responses by students (for a specific year)
 			CREATE TABLE `responses_2019_2020` (
@@ -138,7 +138,7 @@ class practicalAssessments extends frontControllerApplication
 			  `answerGiven` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The answer the student gave',
 			  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			  PRIMARY KEY (`id`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Table of responses by the student';
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of responses by the student';
 			
 			-- User state (for a specific year)
 			CREATE TABLE `state_2019_2020` (
@@ -152,7 +152,7 @@ class practicalAssessments extends frontControllerApplication
 			  `assessmentCurrentPages` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Assessment: Page of session - current',
 			  `lastUpdated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
 			  PRIMARY KEY (`username`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Table to store user state';
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to store user state';
 			
 			-- Topics (i.e. sessions)
 			CREATE TABLE `topics` (
@@ -162,7 +162,7 @@ class practicalAssessments extends frontControllerApplication
 			  `opening` datetime DEFAULT NULL COMMENT 'Date/time this session opens',
 			  `closing` datetime DEFAULT NULL COMMENT 'Date/time this session closes',
 			  PRIMARY KEY (`id`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Table of topics (i.e. each teaching session)';
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of topics (i.e. each teaching session)';
 		";
 	}
 	
