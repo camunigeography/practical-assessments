@@ -102,6 +102,71 @@ class practicalAssessments extends frontControllerApplication
 	}
 	
 	
+	# Database structure definition
+	public function databaseStructure ()
+	{
+		return "
+			-- Administrators
+			CREATE TABLE `administrators` (
+			  `crsid` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+			  `active` enum('Y','N') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Y',
+			  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+			  `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+			  PRIMARY KEY (`crsid`)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Administrators';
+			
+			-- Questions
+			CREATE TABLE `assessments` (
+			  `id` int NOT NULL COMMENT 'Automatic key',
+			  `topic__JOIN__stats1a__topics__reserved` tinyint NOT NULL COMMENT 'Topic (session)',
+			  `questionNumber` tinyint NOT NULL COMMENT 'Question number',
+			  `questionHtml` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Text of question',
+			  `type` enum('','radiobuttons','checkboxes') COLLATE utf8_unicode_ci NOT NULL COMMENT 'Answer structure',
+			  `choices` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Choices',
+			  `correctAnswerNumber` varchar(32) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Correct answer (1=first)',
+			  `why` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Why text',
+			  `help` text COLLATE utf8_unicode_ci COMMENT 'Help text',
+			  PRIMARY KEY (`id`)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of questions';
+			
+			-- Responses by students (for a specific year)
+			CREATE TABLE `responses_2019_2020` (
+			  `id` int NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
+			  `username` varchar(16) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Username',
+			  `questionId__JOIN__stats1a__assessments__reserved` int NOT NULL COMMENT 'Question ID',
+			  `isCorrect` int NOT NULL COMMENT 'Whether the student answered correctly',
+			  `answerGiven` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'The answer the student gave',
+			  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			  PRIMARY KEY (`id`)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of responses by the student';
+			
+			-- User state (for a specific year)
+			CREATE TABLE `state_2019_2020` (
+			  `username` varchar(16) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Username',
+			  `currentTopic` int NOT NULL DEFAULT '1' COMMENT 'Current topic',
+			  `theoryFurthestPages` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Theory: Pages - reached',
+			  `theoryCurrentPages` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Theory: Page of session - current',
+			  `practicalFurthestPages` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Practical: Pages - reached',
+			  `practicalCurrentPages` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Practical: Page of session - current',
+			  `assessmentFurthestPages` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Assessment: Pages - reached',
+			  `assessmentCurrentPages` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Assessment: Page of session - current',
+			  `lastUpdated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
+			  PRIMARY KEY (`username`)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table to store user state';
+			
+			-- Topics (i.e. sessions)
+			CREATE TABLE `topics` (
+			  `id` int NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
+			  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Title of topic (i.e. teaching session)',
+			  `directionality` enum('Forward and back','Forward only') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Forward and back' COMMENT 'Direction that students can progress through this topic',
+			  `opening` datetime DEFAULT NULL COMMENT 'Date/time this session opens',
+			  `closing` datetime DEFAULT NULL COMMENT 'Date/time this session closes',
+			  PRIMARY KEY (`id`)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of topics (i.e. each teaching session)';
+		";
+	}
+	
+	
 	# Constructor
 	protected function main ()
 	{
