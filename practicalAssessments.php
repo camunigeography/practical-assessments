@@ -117,7 +117,7 @@ class practicalAssessments extends frontControllerApplication
 			-- Questions
 			CREATE TABLE `assessments` (
 			  `id` int NOT NULL COMMENT 'Automatic key',
-			  `topic__JOIN__stats1a__topics__reserved` tinyint NOT NULL COMMENT 'Topic (session)',
+			  `topicsId` tinyint NOT NULL COMMENT 'Topic (session)',
 			  `questionNumber` tinyint NOT NULL COMMENT 'Question number',
 			  `questionHtml` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Text of question',
 			  `type` enum('','radiobuttons','checkboxes') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Answer structure',
@@ -133,7 +133,7 @@ class practicalAssessments extends frontControllerApplication
 			  `id` int NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
 			  `username` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username',
 			  `academicYear` VARCHAR(9) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Academic year',
-			  `questionId__JOIN__stats1a__assessments__reserved` int NOT NULL COMMENT 'Question ID',
+			  `assessmentsId` int NOT NULL COMMENT 'Question ID',
 			  `isCorrect` int NOT NULL COMMENT 'Whether the student answered correctly',
 			  `answerGiven` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The answer the student gave',
 			  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -285,7 +285,7 @@ class practicalAssessments extends frontControllerApplication
 			FROM
 		" . ($requireAssessments ? "
 			assessments
-			LEFT JOIN topics ON topic__JOIN__{$this->settings['database']}__topics__reserved = topics.id
+			LEFT JOIN topics ON topicsId = topics.id
 		" : 'topics') . '
 			ORDER BY topics.id
 			;';
@@ -303,7 +303,7 @@ class practicalAssessments extends frontControllerApplication
 		$query = "SELECT
 				*
 			FROM assessments
-			WHERE topic__JOIN__{$this->settings['database']}__topics__reserved = {$topic}
+			WHERE topicsId = {$topic}
 			ORDER BY questionNumber
 			;";
 		$data = $this->databaseConnection->getData ($query, "{$this->settings['database']}.assessments");
@@ -332,12 +332,12 @@ class practicalAssessments extends frontControllerApplication
 		#!# Could do as a JOIN earlier on, rather than this messy merging process
 		$query = "SELECT
 				*,
-				questionId__JOIN__{$this->settings['database']}__assessments__reserved AS id
+				assessmentsId AS id
 			FROM responses
 			WHERE
 				    username = '{$this->user}'
 				AND academicYear = '{$this->academicYear}'
-				AND questionId__JOIN__{$this->settings['database']}__assessments__reserved IN({$questionIds})
+				AND assessmentsId IN({$questionIds})
 			;";
 		$responses = $this->databaseConnection->getData ($query, "{$this->settings['database']}.responses");
 		foreach ($questions as $index => $question) {
@@ -570,7 +570,7 @@ class practicalAssessments extends frontControllerApplication
 				$insert = array (
 					'username' => $this->user,
 					'academicYear' => $this->academicYear,
-					"questionId__JOIN__{$this->settings['database']}__assessments__reserved" => $question['id'],
+					'assessmentsId' => $question['id'],
 					'isCorrect' => ($answerIsCorrect ? '1' : '0'),
 					'answerGiven' => $result["answer{$questionNumber}"],
 				);
@@ -1050,10 +1050,10 @@ class practicalAssessments extends frontControllerApplication
 		$query = "SELECT
 			{$this->settings['database']}.responses.id, {$this->settings['database']}.responses.username,
 			{$this->settings['globalPeopleDatabase']}.people.forename, {$this->settings['globalPeopleDatabase']}.people.surname,
-			{$this->settings['database']}.assessments.topic__JOIN__{$this->settings['database']}__topics__reserved as topic, {$this->settings['database']}.assessments.questionNumber,
+			{$this->settings['database']}.assessments.topicsId AS topic, {$this->settings['database']}.assessments.questionNumber,
 			{$this->settings['database']}.responses.isCorrect
 		FROM responses
-		LEFT JOIN {$this->settings['database']}.assessments ON questionId__JOIN__{$this->settings['database']}__assessments__reserved = {$this->settings['database']}.assessments.id
+		LEFT JOIN {$this->settings['database']}.assessments ON assessmentsId = {$this->settings['database']}.assessments.id
 		LEFT JOIN {$this->settings['globalPeopleDatabase']}.people ON {$this->settings['database']}.responses.username = {$this->settings['globalPeopleDatabase']}.people.username
 		WHERE {$this->settings['database']}.responses.academicYear = :academicYear
 		ORDER BY surname, forename, `topic`, questionNumber;";
@@ -1093,10 +1093,14 @@ class practicalAssessments extends frontControllerApplication
 			array ($this->settings['database'], 'assessments', 'questionHtml', array ('editorToolbarSet' => 'BasicImage', 'editorFileBrowserStartupPath' => $this->baseUrl . '/images/', 'imageAlignmentByClass' => false, )),
 		);
 		
+		# Define sinenomine settings
+		$sinenomineExtraSettings = array (
+			'simpleJoin' => true,
+		);
 		
 		# Run the standard front controller editing integration
 		#!# Ideally need to supply explicit deny list
-		echo parent::editing ($attributes, $deny);
+		echo parent::editing ($attributes, $deny, $sinenomineExtraSettings);
 	}
 	
 	
