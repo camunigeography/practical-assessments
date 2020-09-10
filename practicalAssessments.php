@@ -16,6 +16,7 @@ class practicalAssessments extends frontControllerApplication
 			'globalPeopleDatabase' => 'people',
 			'table'			=> 'people',
 			'applicationName'	=> 'Practicals assessments',
+			'tabUlClass' => 'tabsflat',
 			'authentication' => true,
 			'administrators' => true,
 			'yearStartMonth' => 12,
