@@ -1,0 +1,27 @@
+
+
+/* Clipping: see http://www.seifi.org/css/creating-thumbnails-using-the-css-clip-property.html */
+#practicalassessments .clipwrapper {position: relative; width: 770px; height: 500px; border: 1px solid #ccc;}
+#practicalassessments .clip {position: absolute; clip: rect(53px 788px 553px 18px); top: -53px; left: -18px;}
+#practicalassessments table.topics tr td:first-child {text-align: right;}
+#practicalassessments table.topics tr td {height: 2em; padding-top: 17px;}
+#practicalassessments table.topics tr td:nth-child(2) {padding-right: 15px;}
+#practicalassessments table.topics tr td a {background-color: #f7f7f7; padding-left: 20px; padding-right: 20px;}
+#practicalassessments table.topics tr td a:hover {background-color: #e7e7e7; text-decoration: none;}
+#practicalassessments p.pagenumbers {float: left; margin-top: 0; padding-top: 0;}
+#practicalassessments form#previousnext {width: 772px; text-align: right;}
+#practicalassessments div.graybox form#previousnext {text-align: left;}
+#practicalassessments form#previousnext, #practicalassessments form#gotopage {height: 60px;}
+#practicalassessments form#gotopage {width: 475px; float: left; line-height: 23px;}
+#practicalassessments form#previousnext input, #practicalassessments form#gotopage input, #practicalassessments form#gotopage span {border: 1px solid gray;}
+#practicalassessments form#previousnext input.selected, #practicalassessments form#gotopage input.selected {border-color: black; border-width: 2px;}
+#practicalassessments form#gotopage span {border-color: #ccc; color: #aaa;}
+#practicalassessments form#previousnext input, #practicalassessments form#previousnext img.spacer, #practicalassessments form#gotopage span {font-size: 1.3em; margin: 0 0 0 10px; width: 100px; padding: 0; height: 25px;}
+#practicalassessments form#previousnext img.spacer {float: right; border: 1px solid white; margin-left: 11px;}
+#practicalassessments form#gotopage input, #practicalassessments form#gotopage span {padding: 1px 3px; font-size: 0.83em; margin: 0 0 0 3px; opacity: 0.7;}
+#practicalassessments form#gotopage input, #practicalassessments form#gotopage span {filter: alpha(opacity=70); -moz-opacity: 0.7; -khtml-opacity: 0.7;}	/* Vendor-specific hacks */
+#practicalassessments .ultimateform p.submit, #practicalassessments .ultimateform table td {border: 0;}	/* Override of generic.css */
+#practicalassessments #question {font-weight: bold;}
+#practicalassessments div.graybox {max-width: 740px;}
+#practicalassessments div.clear {clear: both;}
+

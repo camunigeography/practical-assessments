@@ -1,0 +1,15 @@
+<?php
+
+# Settings
+$settings = array (
+	'database' => 'the_password',
+	'courseName' => 'Statistics',
+	'courseRegexp' => '^(undergraduate2020|anothergroupname)$',
+	'tableSuffix' => '_2020_2021',	// Do not use hyphens here - use underscores if required; NB you will need to create the tables
+)
+
+# Run the application with the defined settings
+require_once ('practicalAssessments.php');
+new practicalAssessments ($settings);
+
+?>

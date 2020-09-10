@@ -1,0 +1,45 @@
+# Application Apache directives
+
+# Load using:
+#	# Practical assessments system
+#	Include /path/to/practical-assessments/.httpd.conf.extract.txt
+#	Use MacroPracticalAssessments /elearning/practical "/path/to/site/:/path/to/practical-assessments/:/path/to/php/libraries/"
+
+
+<Macro MacroPracticalAssessments $baseUrl $includePath>
+	
+	# Include path
+	<LocationMatch $baseUrl>
+		php_value include_path "$includePath"
+	</LocationMatch>
+	
+	# Front controller application support
+	Use MacroFrontControllerApplication "$baseUrl/" "Practical assessments"
+	
+	# Data editing
+	Use MacroSinenomineEmbeddedWholeDb "$baseUrl" "/data" "editing"
+	
+	# Application routing
+	RewriteEngine on
+	RewriteRule ^$baseUrl/(theory|practical|assessment)/$ $baseUrl/index.html?action=$1&item=select [L]
+	RedirectMatch permanent ^$baseUrl/(theory|practical|assessment)$ $baseUrl/$1/
+	RewriteRule ^$baseUrl/topic([1-9][0-9]?)/(theory|practical|assessment)/$ $baseUrl/index.html?action=$2&item=$1 [L]
+	RedirectMatch permanent ^$baseUrl/topic([1-9][0-9]?)/(theory|practical|assessment)$ $baseUrl/topic$1/$2/
+	RedirectMatch permanent ^$baseUrl/topic([1-9][0-9]?)/?$ $baseUrl/
+	RewriteRule ^$baseUrl/(status|results|upload).html$ $baseUrl/index.html?action=$1 [L]
+	RewriteRule ^$baseUrl/results(raw|compiled).csv$ $baseUrl/index.html?action=results$1 [L]
+	
+	# CSV downloads, ensuring there is no auto-prepended/appended contento
+	<LocationMatch $baseUrl/results(raw|compiled).csv>
+		php_value auto_prepend_file none
+		php_value auto_append_file none
+	</LocationMatch>
+	
+	# Richtext editor dependency
+	Alias /_ckfinder/ /websites/common/js/_ckfinder/
+	<LocationMatch (/_ckeditor/|/_ckfinder/)>
+		php_admin_value auto_prepend_file none
+		php_admin_value auto_append_file none
+	</LocationMatch>
+	
+</Macro>
