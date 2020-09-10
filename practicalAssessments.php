@@ -178,6 +178,10 @@ class practicalAssessments extends frontControllerApplication
 		);
 		if (!$this->settings['enableTheory']) {unset ($this->actionLabels['theory']);}
 		
+		# Determine the academic year
+		require_once ('timedate.php');
+		$this->academicYear = timedate::academicYear (10, $asRangeString = true);
+		
 		# Get the available topics
 		$this->topics = $this->getTopics ();
 		
@@ -927,9 +931,7 @@ class practicalAssessments extends frontControllerApplication
 	private function resultsCsv ($data, $type)
 	{
 		# Define the filename base
-		require_once ('timedate.php');
-		$academicYear = timedate::academicYear (10, $asRangeString = true);
-		$filenameBase = __CLASS__ . '_' . $this->settings['database'] . '_' . $academicYear . '_results' . '_' . $type;
+		$filenameBase = __CLASS__ . '_' . $this->settings['database'] . '_' . $this->academicYear . '_results' . '_' . $type;
 		
 		# Serve as CSV
 		require_once ('csv.php');
