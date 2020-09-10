@@ -19,14 +19,9 @@ class practicalAssessments extends frontControllerApplication
 			'tabUlClass' => 'tabsflat',
 			'authentication' => true,
 			'administrators' => true,
-			'yearStartMonth' => 12,
-			'courseName' => NULL,
 			'div' => 'practicalassessments',
 			'useFeedback' => false,
 			'useEditing' => true,
-			'courseRegexp' => NULL,
-			'enableTheory' => false,
-			'assessmentLabel' => 'assessment',
 			'browseableAlwaysOpen' => false,
 		);
 		
@@ -114,6 +109,21 @@ class practicalAssessments extends frontControllerApplication
 			  PRIMARY KEY (`crsid`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Administrators';
 			
+			-- Settings
+			CREATE TABLE `settings` (
+			  `id` int NOT NULL AUTO_INCREMENT COMMENT 'Automatic key (ignored)',
+			  `courseName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Course name',
+			  `courseRegexp` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Cohort ID pattern (regular expression)',
+			  `academicYearStartMonth` int DEFAULT '10' COMMENT 'Academic year start month (e.g. 10 = October)',
+			  `enableTheory` tinyint DEFAULT NULL COMMENT 'Enable theory module?',
+			  `assessmentLabel` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'assessment' COMMENT 'Assessment label',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Settings';
+			
+			-- Insert initial settings
+			INSERT INTO `settings` (`id`, `courseName`, `courseRegexp`, `academicYearStartMonth`, `enableTheory`, `assessmentLabel`) VALUES
+			  (1, 'Practicals assessments', CONCAT('^undergraduate', YEAR(CURDATE()), '$'), 10, NULL, 'assessment');
+			
 			-- Questions
 			CREATE TABLE `assessments` (
 			  `id` int NOT NULL COMMENT 'Automatic key',
@@ -181,7 +191,7 @@ class practicalAssessments extends frontControllerApplication
 		
 		# Determine the academic year
 		require_once ('timedate.php');
-		$this->academicYear = timedate::academicYear (10, $asRangeString = true);
+		$this->academicYear = timedate::academicYear ($this->settings['academicYearStartMonth'], $asRangeString = true);
 		
 		# Get the available topics
 		$this->topics = $this->getTopics ();
