@@ -101,21 +101,21 @@ class practicalAssessments extends frontControllerApplication
 		return "
 			-- Administrators
 			CREATE TABLE `administrators` (
-			  `crsid` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-			  `active` enum('Y','N') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Y',
-			  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-			  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+			  `crsid` varchar(10) NOT NULL,
+			  `active` enum('Y','N') NOT NULL DEFAULT 'Y',
+			  `name` varchar(255) NOT NULL,
+			  `email` varchar(255) NOT NULL,
 			  PRIMARY KEY (`crsid`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Administrators';
 			
 			-- Settings
 			CREATE TABLE `settings` (
 			  `id` int NOT NULL AUTO_INCREMENT COMMENT 'Automatic key (ignored)',
-			  `courseName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Course name',
-			  `courseRegexp` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Cohort ID pattern (regular expression);<br />can use %year for academic year start',
+			  `courseName` varchar(255) NOT NULL COMMENT 'Course name',
+			  `courseRegexp` varchar(255) NOT NULL COMMENT 'Cohort ID pattern (regular expression);<br />can use %year for academic year start',
 			  `academicYearStartMonth` int DEFAULT '10' COMMENT 'Academic year start month (e.g. 10 = October)',
 			  `enableTheory` tinyint DEFAULT NULL COMMENT 'Enable theory module?',
-			  `assessmentLabel` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'assessment' COMMENT 'Assessment label',
+			  `assessmentLabel` varchar(255) NOT NULL DEFAULT 'assessment' COMMENT 'Assessment label',
 			  PRIMARY KEY (`id`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Settings';
 			
@@ -128,38 +128,38 @@ class practicalAssessments extends frontControllerApplication
 			  `id` int NOT NULL COMMENT 'Automatic key',
 			  `topicsId` tinyint NOT NULL COMMENT 'Topic (session)',
 			  `questionNumber` tinyint NOT NULL COMMENT 'Question number',
-			  `questionHtml` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Text of question',
-			  `type` enum('','radiobuttons','checkboxes') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Answer structure',
-			  `choices` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Choices',
-			  `correctAnswerNumber` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Correct answer (1=first)',
-			  `why` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Why text',
-			  `help` text COLLATE utf8mb4_unicode_ci COMMENT 'Help text',
+			  `questionHtml` text NOT NULL COMMENT 'Text of question',
+			  `type` enum('','radiobuttons','checkboxes') NOT NULL COMMENT 'Answer structure',
+			  `choices` text NOT NULL COMMENT 'Choices',
+			  `correctAnswerNumber` varchar(32) NOT NULL COMMENT 'Correct answer (1=first)',
+			  `why` text NOT NULL COMMENT 'Why text',
+			  `help` text COMMENT 'Help text',
 			  PRIMARY KEY (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of questions';
 			
 			-- Responses by students
 			CREATE TABLE `responses` (
 			  `id` int NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
-			  `username` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username',
-			  `academicYear` VARCHAR(9) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Academic year',
+			  `username` varchar(16) NOT NULL COMMENT 'Username',
+			  `academicYear` VARCHAR(9) NOT NULL COMMENT 'Academic year',
 			  `assessmentsId` int NOT NULL COMMENT 'Question ID',
 			  `isCorrect` int NOT NULL COMMENT 'Whether the student answered correctly',
-			  `answerGiven` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The answer the student gave',
+			  `answerGiven` varchar(255) NOT NULL COMMENT 'The answer the student gave',
 			  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			  PRIMARY KEY (`id`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of responses by the student';
 			
 			-- User state
 			CREATE TABLE `state` (
-			  `username` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username',
-			  `academicYear` varchar(9) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Academic year',
+			  `username` varchar(16) NOT NULL COMMENT 'Username',
+			  `academicYear` varchar(9) NOT NULL COMMENT 'Academic year',
 			  `currentTopic` int NOT NULL DEFAULT '1' COMMENT 'Current topic',
-			  `theoryFurthestPages` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Theory: Pages - reached',
-			  `theoryCurrentPages` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Theory: Page of session - current',
-			  `practicalFurthestPages` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Practical: Pages - reached',
-			  `practicalCurrentPages` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Practical: Page of session - current',
-			  `assessmentFurthestPages` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Assessment: Pages - reached',
-			  `assessmentCurrentPages` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:1' COMMENT 'Assessment: Page of session - current',
+			  `theoryFurthestPages` varchar(255) NOT NULL DEFAULT '1:1' COMMENT 'Theory: Pages - reached',
+			  `theoryCurrentPages` varchar(255) NOT NULL DEFAULT '1:1' COMMENT 'Theory: Page of session - current',
+			  `practicalFurthestPages` varchar(255) NOT NULL DEFAULT '1:1' COMMENT 'Practical: Pages - reached',
+			  `practicalCurrentPages` varchar(255) NOT NULL DEFAULT '1:1' COMMENT 'Practical: Page of session - current',
+			  `assessmentFurthestPages` varchar(255) NOT NULL DEFAULT '1:1' COMMENT 'Assessment: Pages - reached',
+			  `assessmentCurrentPages` varchar(255) NOT NULL DEFAULT '1:1' COMMENT 'Assessment: Page of session - current',
 			  `lastUpdated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
 			  UNIQUE KEY `entry` (`username`,`academicYear`)
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to store user state';
@@ -167,8 +167,8 @@ class practicalAssessments extends frontControllerApplication
 			-- Topics (i.e. sessions)
 			CREATE TABLE `topics` (
 			  `id` int NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
-			  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Title of topic (i.e. teaching session)',
-			  `directionality` enum('Forward and back','Forward only') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Forward and back' COMMENT 'Direction that students can progress through this topic',
+			  `name` varchar(255) NOT NULL COMMENT 'Title of topic (i.e. teaching session)',
+			  `directionality` enum('Forward and back','Forward only') NOT NULL DEFAULT 'Forward and back' COMMENT 'Direction that students can progress through this topic',
 			  `opening` datetime DEFAULT NULL COMMENT 'Date/time this session opens',
 			  `closing` datetime DEFAULT NULL COMMENT 'Date/time this session closes',
 			  PRIMARY KEY (`id`)
