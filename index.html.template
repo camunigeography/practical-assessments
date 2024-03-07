@@ -9,7 +9,7 @@ $settings = array (
 )
 
 # Run the application with the defined settings
-require_once ('practicalAssessments.php');
+require_once ('vendor/autoload.php');
 new practicalAssessments ($settings);
 
 ?>

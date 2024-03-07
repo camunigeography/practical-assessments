@@ -3,15 +3,10 @@
 # Load using:
 #	# Practical assessments system
 #	Include /path/to/practical-assessments/.httpd.conf.extract.txt
-#	Use MacroPracticalAssessments /elearning/practical "/path/to/site/:/path/to/practical-assessments/:/path/to/php/libraries/"
+#	Use MacroPracticalAssessments /elearning/practical
 
 
-<Macro MacroPracticalAssessments $baseUrl $includePath>
-	
-	# Include path
-	<Location $baseUrl>
-		php_value include_path "$includePath"
-	</Location>
+<Macro MacroPracticalAssessments $baseUrl>
 	
 	# Front controller application support
 	Use MacroFrontControllerApplication "$baseUrl/" "Practical assessments"

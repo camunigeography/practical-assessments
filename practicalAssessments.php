@@ -1,7 +1,6 @@
 <?php
 
 # Class to provide a practicals assessments system
-require_once ('frontControllerApplication.php');
 class practicalAssessments extends frontControllerApplication
 {
 	# Function to assign defaults additional to the general application defaults
@@ -190,7 +189,6 @@ class practicalAssessments extends frontControllerApplication
 		if (!$this->settings['enableTheory']) {unset ($this->actionLabels['theory']);}
 		
 		# Determine the academic year
-		require_once ('timedate.php');
 		$this->academicYear = timedate::academicYear ($this->settings['academicYearStartMonth'], $asRangeString = true);
 		
 		# Parse the course regexp for %year
@@ -539,7 +537,6 @@ class practicalAssessments extends frontControllerApplication
 		}
 		
 		# Create the form
-		require_once ('ultimateForm.php');
 		$form = new form (array (
 			'displayRestrictions' => false,
 			'reappear' => 'disabled',
@@ -779,7 +776,6 @@ class practicalAssessments extends frontControllerApplication
 		$directory = $_SERVER['DOCUMENT_ROOT'] . $this->baseUrl . "/images/{$session}/{$type}/";
 		
 		# Get the PNG files in this directory
-		require_once ('directories.php');
 		if ($images = directories::listFiles ($directory, array ('PNG'), $directoryIsFromRoot = true)) {
 			ksort ($images);
 		}
@@ -954,7 +950,6 @@ class practicalAssessments extends frontControllerApplication
 		$filenameBase = __CLASS__ . '_' . $this->settings['database'] . '_' . $this->academicYear . '_results' . '_' . $type;
 		
 		# Serve as CSV
-		require_once ('csv.php');
 		csv::serve ($data, $filenameBase);
 	}
 	
@@ -1191,7 +1186,6 @@ class practicalAssessments extends frontControllerApplication
 			# Remove any current images
 			$topicTypeImagesDirectory = $topicImagesDirectory . $type . '/';
 			if (is_dir ($topicTypeImagesDirectory)) {
-				require_once ('directories.php');
 				$oldImageFiles = directories::listFiles ($topicTypeImagesDirectory, array (), $directoryIsFromRoot = true, $skipUnreadableFiles = false);
 				foreach ($oldImageFiles as $oldImageFile => $attributes) {
 					unlink ($topicTypeImagesDirectory . $oldImageFile);
